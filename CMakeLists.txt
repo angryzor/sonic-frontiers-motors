@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.28)
-project(rsdk-example VERSION 0.0.1
-                 DESCRIPTION "rangers-sdk example"
+project(motors VERSION 0.0.1
+                 DESCRIPTION "Motors"
                  LANGUAGES CXX)
 
 set(PROJECT_AUTHOR "angryzor")
-set(PROJECT_LONG_DESCRIPTION "rangers-sdk example")
+set(PROJECT_LONG_DESCRIPTION "Motors")
 set(PROJECT_COPYRIGHT "Copyright (c) 2024 angryzor - Licensed under GPL3")
 set(PROJECT_AUTHOR_URL "https://github.com/angryzor")
-set(PROJECT_UPDATE_SERVER "https://raw.githubusercontent.com/angryzor/hmm-update-server/main/sonic-frontiers/rsdk-example/")
+set(PROJECT_UPDATE_SERVER "https://raw.githubusercontent.com/angryzor/hmm-update-server/main/sonic-frontiers/${PROJECT_NAME}/")
 option(INSTALL_TO_UPDATE_SERVER "Install to update server" OFF)
 set(UPDATE_SERVER_PATH "" CACHE PATH "Path to update server")
 string(TIMESTAMP PROJECT_BUILD_DATE "%Y-%m-%d")
