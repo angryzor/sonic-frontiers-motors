@@ -93,6 +93,61 @@ const hh::fnd::RflTypeInfo GOCMotorRotateSpawner::rflTypeInfo{
 	sizeof(GOCMotorRotateSpawner),
 };
 
+struct GOCMotorOnPathSpawner {
+	app_cmn::game::GOCMotor::TimeType timeType;
+	csl::ut::VariableString pathName;
+	float speed;
+	float waitTime;
+	float phase;
+	bool loop;
+	bool isReverse;
+	bool boolEE;
+	bool boolEF;
+
+	static const hh::fnd::RflClassMember rflClassMembers[9];
+	static const hh::fnd::RflClass rflClass;
+	static const hh::fnd::RflTypeInfo rflTypeInfo;
+};
+
+
+const hh::fnd::RflClassMember GOCMotorOnPathSpawner::rflClassMembers[9]{
+	{ "timeType", nullptr, &timeTypeEnum, hh::fnd::RflClassMember::TYPE_ENUM, hh::fnd::RflClassMember::TYPE_UINT32, 0, 0, offsetof(GOCMotorOnPathSpawner, timeType), nullptr },
+	{ "pathName", nullptr, nullptr, hh::fnd::RflClassMember::TYPE_STRING, hh::fnd::RflClassMember::TYPE_VOID, 0, 0, offsetof(GOCMotorOnPathSpawner, pathName), nullptr },
+	{ "speed", nullptr, nullptr, hh::fnd::RflClassMember::TYPE_FLOAT, hh::fnd::RflClassMember::TYPE_VOID, 0, 0, offsetof(GOCMotorOnPathSpawner, speed), nullptr },
+	{ "waitTime", nullptr, nullptr, hh::fnd::RflClassMember::TYPE_FLOAT, hh::fnd::RflClassMember::TYPE_VOID, 0, 0, offsetof(GOCMotorOnPathSpawner, waitTime), nullptr },
+	{ "phase", nullptr, nullptr, hh::fnd::RflClassMember::TYPE_FLOAT, hh::fnd::RflClassMember::TYPE_VOID, 0, 0, offsetof(GOCMotorOnPathSpawner, phase), nullptr },
+	{ "loop", nullptr, nullptr, hh::fnd::RflClassMember::TYPE_BOOL, hh::fnd::RflClassMember::TYPE_VOID, 0, 0, offsetof(GOCMotorOnPathSpawner, loop), nullptr },
+	{ "isReverse", nullptr, nullptr, hh::fnd::RflClassMember::TYPE_BOOL, hh::fnd::RflClassMember::TYPE_VOID, 0, 0, offsetof(GOCMotorOnPathSpawner, isReverse), nullptr },
+	{ "boolEE", nullptr, nullptr, hh::fnd::RflClassMember::TYPE_BOOL, hh::fnd::RflClassMember::TYPE_VOID, 0, 0, offsetof(GOCMotorOnPathSpawner, boolEE), nullptr },
+	{ "boolEF", nullptr, nullptr, hh::fnd::RflClassMember::TYPE_BOOL, hh::fnd::RflClassMember::TYPE_VOID, 0, 0, offsetof(GOCMotorOnPathSpawner, boolEF), nullptr },
+};
+
+const hh::fnd::RflClass GOCMotorOnPathSpawner::rflClass{ "GOCMotorOnPathSpawner", nullptr, sizeof(GOCMotorOnPathSpawner), nullptr, 0, GOCMotorOnPathSpawner::rflClassMembers, 9, nullptr };
+const hh::fnd::RflTypeInfo GOCMotorOnPathSpawner::rflTypeInfo{
+	"GOCMotorOnPathSpawner",
+	"GOCMotorOnPathSpawner",
+	[](void* instance, csl::fnd::IAllocator* allocator) {
+		auto* inst = static_cast<GOCMotorOnPathSpawner*>(instance);
+		inst->timeType = app_cmn::game::GOCMotor::TimeType::GLOBAL;
+		new (&inst->pathName) csl::ut::VariableString{ allocator };
+		inst->speed = 0.0f;
+		inst->waitTime = 0.0f;
+		inst->phase = 0.0f;
+		inst->loop = 0.0f;
+		inst->isReverse = 0.0f;
+		inst->boolEE = 0.0f;
+		inst->boolEF = 0.0f;
+
+		return instance;
+	},
+	[](void* instance) {},
+	[](void* instance) {
+		auto* inst = static_cast<GOCMotorOnPathSpawner*>(instance);
+		inst->pathName.~VariableString();
+	},
+	sizeof(GOCMotorOnPathSpawner),
+};
+
 void GOCMotorConstant_LoadReflection(app_cmn::game::GOCMotorConstant* self, const hh::game::GOComponent::LoadReflectionInfo& info) {
 	auto* data = static_cast<GOCMotorConstantSpawner*>(info.data);
 	
@@ -125,17 +180,41 @@ void GOCMotorRotate_LoadReflection(app_cmn::game::GOCMotorRotate* self, const hh
 	self->Setup(setupInfo);
 }
 
+void GOCMotorOnPath_LoadReflection(app_cmn::game::GOCMotorOnPath* self, const hh::game::GOComponent::LoadReflectionInfo& info) {
+	auto* data = static_cast<GOCMotorOnPathSpawner*>(info.data);
+
+	if (auto* pathManager = self->GetOwnerGameObject()->gameManager->GetService<hh::path::PathManager>())
+	if (auto* pathComponent = pathManager->GetPathObject(data->pathName)) {
+		app_cmn::game::GOCMotorOnPath::SetupInfo setupInfo{};
+		setupInfo.timeType = data->timeType;
+		setupInfo.frame = nullptr;
+		setupInfo.speed = data->speed;
+		setupInfo.waitTime = data->waitTime;
+		setupInfo.phase = data->phase;
+		setupInfo.loop = data->loop;
+		setupInfo.isReverse = data->isReverse;
+		setupInfo.boolEE = data->boolEE;
+		setupInfo.boolEF = data->boolEF;
+		setupInfo.path = pathComponent;
+
+		self->Setup(setupInfo);
+	}
+}
+
 hh::game::GOComponentRegistry::GOComponentRegistryItem gocMotorConstantItem{ "MotorConstant", app_cmn::game::GOCMotorConstant::GetClass(), &GOCMotorConstantSpawner::rflClass };
 hh::game::GOComponentRegistry::GOComponentRegistryItem gocMotorRotateItem{ "MotorRotate", app_cmn::game::GOCMotorRotate::GetClass(), &GOCMotorRotateSpawner::rflClass };
+hh::game::GOComponentRegistry::GOComponentRegistryItem gocMotorOnPathItem{ "MotorOnPath", app_cmn::game::GOCMotorOnPath::GetClass(), &GOCMotorOnPathSpawner::rflClass };
 
-hh::game::GOComponentRegistry::GOComponentRegistryItem* regItems[] = { &gocMotorConstantItem, &gocMotorRotateItem, nullptr };
+hh::game::GOComponentRegistry::GOComponentRegistryItem* regItems[] = { &gocMotorConstantItem, &gocMotorRotateItem, &gocMotorOnPathItem, nullptr };
 
 HOOK(uint64_t, __fastcall, GameApplication_Reset, 0x1501A41F0, hh::game::GameApplication* self) {
 	auto res = originalGameApplication_Reset(self);
 	hh::fnd::BuiltinTypeRegistry::GetTypeInfoRegistry()->Register(&GOCMotorConstantSpawner::rflTypeInfo);
 	hh::fnd::BuiltinTypeRegistry::GetTypeInfoRegistry()->Register(&GOCMotorRotateSpawner::rflTypeInfo);
+	hh::fnd::BuiltinTypeRegistry::GetTypeInfoRegistry()->Register(&GOCMotorOnPathSpawner::rflTypeInfo);
 	hh::fnd::BuiltinTypeRegistry::GetClassNameRegistry()->Register(&GOCMotorConstantSpawner::rflClass);
 	hh::fnd::BuiltinTypeRegistry::GetClassNameRegistry()->Register(&GOCMotorRotateSpawner::rflClass);
+	hh::fnd::BuiltinTypeRegistry::GetClassNameRegistry()->Register(&GOCMotorOnPathSpawner::rflClass);
 	hh::game::GameObjectSystem::GetInstance()->goComponentRegistry->LoadComponents(regItems);
 	return res;
 }
@@ -147,6 +226,7 @@ BOOL WINAPI DllMain(_In_ HINSTANCE hInstance, _In_ DWORD reason, _In_ LPVOID res
 	case DLL_PROCESS_ATTACH:
 		WRITE_MEMORY(0x141589C00, void*, &GOCMotorConstant_LoadReflection);
 		WRITE_MEMORY(0x141589E20, void*, &GOCMotorRotate_LoadReflection);
+		WRITE_MEMORY(0x1415899D0, void*, &GOCMotorOnPath_LoadReflection);
 		INSTALL_HOOK(GameApplication_Reset);
 		break;
 	case DLL_PROCESS_DETACH:
